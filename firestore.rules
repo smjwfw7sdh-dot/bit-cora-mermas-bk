@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Colección mermasBK - Solo acceso para usuarios autenticados
+    match /mermasBK/{document=**} {
+      
+      // Lectura: Solo usuarios autenticados
+      allow read: if request.auth != null;
+      
+      // Escritura: Solo usuarios autenticados con validación de datos
+      allow write: if 
+        request.auth != null &&
+        validarDatosMerma(request.resource.data);
+      
+      // Eliminación: Solo usuarios autenticados
+      allow delete: if request.auth != null;
+    }
+    
+    // Función de validación de datos
+    function validarDatosMerma(data) {
+      return 
+        // Campos obligatorios existen
+        data.keys().hasAll(['fecha', 'hora', 'producto', 'cantidad', 'motivo']) &&
+        
+        // Tipos de datos correctos
+        data.fecha is string &&
+        data.hora is string &&
+        data.producto is string &&
+        data.cantidad is number &&
+        data.motivo is string &&
+        
+        // Valores no vacíos
+        data.fecha.size() > 0 &&
+        data.hora.size() > 0 &&
+        data.producto.size() > 0 &&
+        data.motivo.size() > 0 &&
+        
+        // Cantidad válida (positiva)
+        data.cantidad > 0 &&
+        data.cantidad <= 1000 &&
+        
+        // Motivo válido
+        data.motivo in ['Q', 'V', 'C', 'E', 'D'] &&
+        
+        // Turno válido (si existe)
+        (!('turno' in data) || data.turno in ['AM', 'PM', 'Trasnoche']);
+    }
+  }
+}

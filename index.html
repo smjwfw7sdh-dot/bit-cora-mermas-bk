@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitácora de Merma - Burger King</title>
+  <meta name="theme-color" content="#D62300">
+  
+  <link href="https://db.onlinewebfonts.com/c/565a681be0eb6f1d92c6bc57c629ea35?family=Flame+Bold" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="screen active">
+    <div class="login-box">
+      <h1>Bitácora de Merma</h1>
+      <h2>BURGER KING</h2>
+      <p class="location">Las Rastras</p>
+      
+      <form onsubmit="login(event)">
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit" class="btn-primary">Ingresar</button>
+      </form>
+      
+      <p id="loginError" class="error" style="display:none;"></p>
+      <p class="forgot-link" onclick="mostrarRecuperacion()">¿Olvidaste tu contraseña?</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" class="screen">
+    <div class="container">
+      <header>
+        <div class="header-top">
+          <h1>Bitácora de Merma</h1>
+          <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+        <h2>BURGER KING - Las Rastras</h2>
+        <p id="userInfo" class="user-info"></p>
+      </header>
+
+      <div class="header-info">
+        <div class="form-group">
+          <label>Fecha:</label>
+          <input type="date" id="fecha" onchange="cambiarFecha()">
+        </div>
+        <div class="form-group">
+          <label>Turno:</label>
+          <select id="turno">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+            <option value="Trasnoche">Trasnoche</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Registrar Nueva Merma</h2>
+        
+        <div class="form-group">
+          <label>Categoría:</label>
+          <select id="categoria" onchange="cargarProductosPorCategoria()">
+            <option value="">Seleccionar Categoría...</option>
+            <option value="Carnes">Carnes</option>
+            <option value="Pan">Pan</option>
+            <option value="Postres">Postres</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Producto:</label>
+          <select id="productoSelect">
+            <option value="">Seleccionar producto...</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hora:</label>
+            <input type="time" id="hora">
+          </div>
+          <div class="form-group">
+            <label>Cantidad:</label>
+            <input type="number" id="cantidad" placeholder="Cantidad" step="0.01" min="0.01">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Motivo:</label>
+          <select id="motivo">
+            <option value="">Seleccionar Motivo...</option>
+            <option value="Q">Q - Quemado</option>
+            <option value="V">V - Vencido</option>
+            <option value="C">C - Contaminado / Caído al piso</option>
+            <option value="E">E - Error de preparación</option>
+            <option value="D">D - Daño de fábrica o transporte</option>
+          </select>
+        </div>
+        
+        <button onclick="agregarMerma()" class="btn-primary">Registrar Merma</button>
+
+        <div class="resumen" id="resumen">
+          <strong>Total del día: <span id="totalMerma">0</span> unidades</strong>
+        </div>
+
+        <h2>Registros - <span id="fechaActual"></span></h2>
+        <div class="table-wrapper">
+          <table id="tablaMermas">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Turno</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Motivo</th>
+                <th>Usuario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="listaMermas"></tbody>
+          </table>
+        </div>
+
+        <button onclick="exportarCSV()" class="btn-export">Exportar CSV (Análisis)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOVERY MODAL -->
+  <div id="recoveryModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarRecuperacion()">&times;</span>
+      <h2>Recuperar Acceso</h2>
+      <p>Ingresa tu correo para recibir instrucciones de recuperación:</p>
+      <input type="email" id="recoveryEmail" placeholder="Correo electrónico">
+      <button onclick="enviarRecuperacion()" class="btn-primary">Enviar enlace</button>
+      <p id="recoveryMessage" style="display:none;"></p>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
