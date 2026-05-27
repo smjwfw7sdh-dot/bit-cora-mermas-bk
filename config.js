@@ -11,12 +11,9 @@
  */
 
 const firebaseConfig = {
-  apiKey: "ACTUALIZA_CON_TU_API_KEY",
-  authDomain: "ACTUALIZA_CON_TU_AUTH_DOMAIN",
-  projectId: "ACTUALIZA_CON_TU_PROJECT_ID",
-  storageBucket: "ACTUALIZA_CON_TU_STORAGE_BUCKET",
-  messagingSenderId: "ACTUALIZA_CON_TU_MESSAGING_SENDER_ID",
-  appId: "ACTUALIZA_CON_TU_APP_ID"
+  apiKey: "AIzaSyBzJsuxacvqTVqF7TLIvEV3Rh8Mn1sY-nY",
+  authDomain: "bklasrastras.firebaseapp.com",
+  // ... etc
 };
 
 // Inicializar Firebase
