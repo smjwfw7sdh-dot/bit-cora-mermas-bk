@@ -48,6 +48,7 @@ function login(event) {
     .then(resultado => {
       console.log('✅ Login exitoso:', resultado.user.email);
       errorMsg.style.display = 'none';
+      // La transición a la app la maneja onAuthStateChanged
     })
     .catch(error => {
       console.error('❌ Error de login:', error.code, error.message);
@@ -257,9 +258,9 @@ async function renderizarTabla() {
   console.log('📊 Cargando registros para:', fecha);
 
   try {
+    // CAMBIO: Se elimina el .orderBy('hora', 'desc') para simplificar la consulta
     const snapshot = await db.collection(collectionName)
       .where('fecha', '==', fecha)
-      .orderBy('hora', 'desc')
       .get();
 
     const tbody = document.getElementById('listaMermas');
@@ -278,96 +279,4 @@ async function renderizarTabla() {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${m.hora}</td>
-          <td>${m.turno || '-'}</td>
-          <td>${m.producto}</td>
-          <td>${cant.toFixed(2)}</td>
-          <td><strong>${m.motivo}</strong></td>
-          <td>${m.usuarioEmail || '-'}</td>
-          <td><button class="delete-btn" onclick="eliminar('${doc.id}')">Eliminar</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    console.log('💰 Total de mermas:', total.toFixed(2));
-    document.getElementById('totalMerma').textContent = total.toFixed(2);
-  } catch (error) {
-    console.error('❌ Error al cargar tabla:', error.code, error.message);
-    alert('Error al cargar los registros: ' + error.message);
-  }
-}
-
-async function eliminar(id) {
-  if (confirm('⚠️ ¿Estás seguro de que deseas eliminar este registro?')) {
-    console.log('🗑️ Eliminando registro:', id);
-    try {
-      await db.collection(collectionName).doc(id).delete();
-      console.log('✅ Registro eliminado');
-      renderizarTabla();
-    } catch (error) {
-      console.error('❌ Error al eliminar:', error.message);
-      alert('Error al eliminar: ' + error.message);
-    }
-  }
-}
-
-async function exportarCSV() {
-  const fecha = getFecha();
-  console.log('📥 Iniciando exportación CSV para:', fecha);
-  
-  if (!fecha) {
-    alert('Selecciona una fecha primero');
-    return;
-  }
-
-  try {
-    const snapshot = await db.collection(collectionName)
-      .where('fecha', '==', fecha)
-      .orderBy('hora')
-      .get();
-
-    if (snapshot.empty) {
-      console.log('ℹ️ No hay registros para exportar');
-      alert('No hay registros para esta fecha');
-      return;
-    }
-
-    console.log('📊 Generando CSV con', snapshot.size, 'registros');
-
-    // Crear CSV con encoding UTF-8
-    let csv = 'Fecha,Hora,Turno,Producto,Cantidad,Motivo,Usuario\n';
-
-    snapshot.forEach(doc => {
-      const m = doc.data();
-      csv += `"${m.fecha}","${m.hora}","${m.turno || ''}","${m.producto.replace(/"/g, '""')}","${m.cantidad}","${m.motivo}","${(m.usuarioEmail || '').replace(/"/g, '""')}"\n`;
-    });
-
-    // Crear y descargar archivo
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Merma_BK_${fecha}.csv`;
-    link.click();
-    
-    console.log('✅ CSV descargado:', link.download);
-  } catch (error) {
-    console.error('❌ Error al generar CSV:', error.message);
-    alert('Error al generar CSV: ' + error.message);
-  }
-}
-
-function cambiarFecha() {
-  console.log('📅 Fecha cambió');
-  renderizarTabla();
-}
-
-// ==================== UTILIDADES ====================
-function mostrarError(elemento, mensaje) {
-  console.warn('⚠️ Mostrando error:', mensaje);
-  elemento.textContent = mensaje;
-  elemento.style.display = 'block';
-  setTimeout(() => {
-    elemento.style.display = 'none';
-  }, 4000);
-}
+          <td>${m.hora
