@@ -27,21 +27,28 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ==================== AUTO LOGIN ====================
+// ==================== AUTO LOGIN (VERSIÓN DETALLADA) ====================
 function autoLogin() {
   console.log('🔄 Intentando auto-login...');
+  
   firebase.auth().signInWithEmailAndPassword(AUTO_LOGIN_EMAIL, AUTO_LOGIN_PASS)
     .then(cred => {
       console.log('🚀 AUTO-LOGIN EXITOSO:', cred.user.email);
       mostrarApp(cred.user);
     })
     .catch(err => {
-      console.error('❌ Auto-login falló:', err.code);
+      console.error('❌ Error detallado:', err.code);
+      console.error('Mensaje:', err.message);
+      
+      const errorMsg = document.getElementById('loginError');
+      if (errorMsg) {
+        mostrarError(errorMsg, 'Error: ' + (err.message || err.code));
+      }
       mostrarLogin();
     });
 }
 
-// ==================== LOGIN MANUAL CON TIMEOUT ====================
+// ==================== LOGIN MANUAL ====================
 function login(event) {
   event.preventDefault();
   console.log('🔄 Login manual iniciado');
@@ -60,23 +67,22 @@ function login(event) {
   btn.textContent = 'Cargando...';
   btn.disabled = true;
 
-  // Timeout de seguridad (8 segundos)
   const timeoutId = setTimeout(() => {
-    console.warn('⚠️ Timeout: Firebase no respondió en 8 segundos');
+    console.warn('⚠️ Timeout: Firebase no respondió');
     btn.textContent = textoOriginal;
     btn.disabled = false;
-    mostrarError(errorMsg, 'Tiempo agotado. Revisa tu conexión o internet');
+    mostrarError(errorMsg, 'Tiempo agotado. Revisa tu conexión');
   }, 8000);
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(cred => {
       clearTimeout(timeoutId);
-      console.log('✅ Login exitoso:', cred.user.email);
+      console.log('✅ Login exitoso');
       mostrarApp(cred.user);
     })
     .catch(err => {
       clearTimeout(timeoutId);
-      console.error('❌ Error Firebase:', err.code, err.message);
+      console.error('❌ Error:', err.code);
       mostrarError(errorMsg, 'Usuario o contraseña incorrectos');
     })
     .finally(() => {
@@ -115,7 +121,7 @@ function logout() {
   }
 }
 
-// ==================== RECUPERACIÓN DE CONTRASEÑA ====================
+// ==================== RECUPERACIÓN ====================
 function mostrarRecuperacion() {
   document.getElementById('recoveryModal').style.display = 'flex';
 }
@@ -129,8 +135,8 @@ function enviarRecuperacion() {
   if (!email) return alert('Ingresa tu correo');
   
   firebase.auth().sendPasswordResetEmail(email)
-    .then(() => alert('✅ Enlace de recuperación enviado'))
-    .catch(() => alert('Error al enviar el enlace'));
+    .then(() => alert('✅ Enlace enviado'))
+    .catch(() => alert('Error al enviar enlace'));
 }
 
-console.log('✅ app.js cargado completamente con timeout de seguridad');
+console.log('✅ app.js cargado completamente');
