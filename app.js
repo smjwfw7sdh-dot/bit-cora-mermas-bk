@@ -1,15 +1,18 @@
 let usuarioActual = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 App simplificada cargada');
+  console.clear();
+  console.log('🚀 App DIAGNÓSTICO cargada');
+
+  if (typeof firebase === 'undefined') {
+    alert('❌ Firebase no se cargó');
+    return;
+  }
 
   firebase.auth().onAuthStateChanged(usuario => {
-    console.log('🔐 Estado:', usuario ? 'LOGUEADO' : 'NO LOGUEADO');
-    if (usuario) {
-      mostrarApp(usuario);
-    } else {
-      mostrarLogin();
-    }
+    console.log('🔐 Auth State:', usuario ? usuario.email : 'NO LOGUEADO');
+    if (usuario) mostrarApp(usuario);
+    else mostrarLogin();
   });
 });
 
@@ -28,16 +31,27 @@ function login(event) {
 
   console.log('🔄 Intentando login con:', email);
 
+  // Timeout más visible
+  const timeout = setTimeout(() => {
+    console.warn('⚠️ TIMEOUT - Firebase no respondió');
+    mostrarError(errorMsg, 'Tiempo agotado. Problema de conexión con Firebase.');
+    btn.textContent = original;
+    btn.disabled = false;
+  }, 10000);
+
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(cred => {
-      console.log('✅ Login exitoso!');
+      clearTimeout(timeout);
+      console.log('✅ LOGIN EXITOSO');
       mostrarApp(cred.user);
     })
     .catch(err => {
-      console.error('❌ Error:', err.code, err.message);
-      mostrarError(errorMsg, `Error: ${err.code || 'Desconocido'}`);
+      clearTimeout(timeout);
+      console.error('❌ ERROR Firebase:', err.code, err.message);
+      mostrarError(errorMsg, `Error: ${err.code || err.message}`);
     })
     .finally(() => {
+      clearTimeout(timeout);
       btn.textContent = original;
       btn.disabled = false;
     });
@@ -57,6 +71,7 @@ function mostrarApp(usuario) {
 function mostrarError(el, msg) {
   el.textContent = msg;
   el.style.display = 'block';
+  el.style.color = 'red';
 }
 
-console.log('✅ Versión mínima cargada - Prueba manual');
+console.log('✅ Versión de diagnóstico cargada');
