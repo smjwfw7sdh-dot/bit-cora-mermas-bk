@@ -8,9 +8,11 @@
   <meta name="description" content="Sistema de registro de mermas para Burger King Las Rastras">
   
   <link href="https://db.onlinewebfonts.com/c/565a681be0eb6f1d92c6bc57c629ea35?family=Flame+Bold" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Firebase Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js" defer></script>
   
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -78,7 +80,6 @@
         <div class="form-group">
           <label>Categoría:</label>
           <select id="categoria" onchange="cargarProductosPorCategoria()" required>
-            <option value="">Seleccionar Categoría...</option>
             <option value="Carnes">Carnes</option>
             <option value="Pan">Pan</option>
             <option value="Postres">Postres</option>
@@ -164,7 +165,23 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <!-- Embedded Firebase Config -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGtr41s2Rs3gpiIthXfNvLoHTfwnjVfbw",
+      authDomain: "bklasrastras-b6383.firebaseapp.com",
+      projectId: "bklasrastras-b6383",
+      storageBucket: "bklasrastras-b6383.firebasestorage.app",
+      messagingSenderId: "315504880421",
+      appId: "1:315504880421:web:c5472989b1e9e57d59c8cc"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const collectionName = "mermasBK";
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  </script>
+  
+  <script src="app.js" defer></script>
 </body>
 </html>
