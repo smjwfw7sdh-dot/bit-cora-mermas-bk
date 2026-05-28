@@ -4,14 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitácora de Merma - Burger King</title>
-  <meta name="theme-color" content="#D62300">
   
-  <link href="https://db.onlinewebfonts.com/c/565a681be0eb6f1d92c6bc57c629ea35?family=Flame+Bold" rel="stylesheet">
-  
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js" defer></script>
+  <!-- Firebase (Versión más estable) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" defer></script>
   
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -25,42 +21,25 @@
       <p class="location">Las Rastras</p>
       
       <form onsubmit="login(event)">
-        <input type="email" id="email" placeholder="Correo electrónico" autocomplete="email" required>
-        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" required>
+        <input type="email" id="email" placeholder="Correo electrónico" value="albornozmati33@gmail.com" autocomplete="email" required>
+        <input type="password" id="password" placeholder="Contraseña" value="BurgerKing@2026" autocomplete="current-password" required>
         <button type="submit" class="btn-primary">Ingresar</button>
       </form>
       
-      <p id="loginError" class="error" style="display:none;"></p>
+      <p id="loginError" class="error" style="display:none; color:red; margin-top:10px;"></p>
       <p class="forgot-link" onclick="mostrarRecuperacion()">¿Olvidaste tu contraseña?</p>
     </div>
   </div>
 
   <!-- MAIN APP -->
   <div id="mainApp" class="screen">
-    <div class="container">
-      <header>
-        <div class="header-top">
-          <h1>Bitácora de Merma</h1>
-          <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
-        </div>
-        <h2>BURGER KING - Las Rastras</h2>
-        <p id="userInfo" class="user-info"></p>
-      </header>
-      
-      <!-- Aquí va el resto de tu contenido (tabla, formulario de mermas, etc.) -->
-      <!-- ... (mantén el resto igual) ... -->
-    </div>
-  </div>
-
-  <!-- Modal Recuperación -->
-  <div id="recoveryModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <h3>Recuperar Contraseña</h3>
-      <input type="email" id="recoveryEmail" placeholder="Tu correo electrónico">
-      <button onclick="enviarRecuperacion()">Enviar enlace</button>
-      <p id="recoveryMessage" style="display:none;"></p>
-      <button onclick="cerrarRecuperacion()">Cerrar</button>
-    </div>
+    <header>
+      <h1>Bitácora de Merma</h1>
+      <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+      <p id="userInfo"></p>
+    </header>
+    
+    <!-- Aquí va el resto de tu contenido (formulario de mermas, tabla, etc.) -->
   </div>
 
   <!-- Firebase Config -->
@@ -75,7 +54,7 @@
     };
     
     firebase.initializeApp(firebaseConfig);
-    console.log("✅ Firebase inicializado correctamente");
+    console.log("✅ Firebase inicializado");
   </script>
 
   <script src="app.js" defer></script>
