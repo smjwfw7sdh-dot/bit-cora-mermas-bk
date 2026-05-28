@@ -1,18 +1,14 @@
 let usuarioActual = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.clear();
-  console.log('🚀 App DIAGNÓSTICO cargada');
-
-  if (typeof firebase === 'undefined') {
-    alert('❌ Firebase no se cargó');
-    return;
-  }
+  console.log('🚀 App cargada - Versión estable');
 
   firebase.auth().onAuthStateChanged(usuario => {
-    console.log('🔐 Auth State:', usuario ? usuario.email : 'NO LOGUEADO');
-    if (usuario) mostrarApp(usuario);
-    else mostrarLogin();
+    if (usuario) {
+      mostrarApp(usuario);
+    } else {
+      mostrarLogin();
+    }
   });
 });
 
@@ -29,29 +25,16 @@ function login(event) {
   btn.disabled = true;
   errorMsg.style.display = 'none';
 
-  console.log('🔄 Intentando login con:', email);
-
-  // Timeout más visible
-  const timeout = setTimeout(() => {
-    console.warn('⚠️ TIMEOUT - Firebase no respondió');
-    mostrarError(errorMsg, 'Tiempo agotado. Problema de conexión con Firebase.');
-    btn.textContent = original;
-    btn.disabled = false;
-  }, 10000);
-
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(cred => {
-      clearTimeout(timeout);
-      console.log('✅ LOGIN EXITOSO');
+      console.log('✅ Login exitoso');
       mostrarApp(cred.user);
     })
     .catch(err => {
-      clearTimeout(timeout);
-      console.error('❌ ERROR Firebase:', err.code, err.message);
-      mostrarError(errorMsg, `Error: ${err.code || err.message}`);
+      console.error('❌ Error:', err.code, err.message);
+      mostrarError(errorMsg, `Error: ${err.code || 'Revisa tu conexión'}`);
     })
     .finally(() => {
-      clearTimeout(timeout);
       btn.textContent = original;
       btn.disabled = false;
     });
@@ -71,7 +54,10 @@ function mostrarApp(usuario) {
 function mostrarError(el, msg) {
   el.textContent = msg;
   el.style.display = 'block';
-  el.style.color = 'red';
 }
 
-console.log('✅ Versión de diagnóstico cargada');
+function logout() {
+  firebase.auth().signOut().then(() => location.reload());
+}
+
+console.log('✅ app.js cargado correctamente');
