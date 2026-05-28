@@ -1,66 +1,47 @@
-// ==================== ESTADO GLOBAL ====================
 let usuarioActual = null;
 
-// ==================== CREDENCIALES ====================
 const AUTO_LOGIN_EMAIL = "albornozmati33@gmail.com";
 const AUTO_LOGIN_PASS = "BurgerKing@2026";
 
-// ==================== INICIALIZACIÓN ====================
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('📱 DOM cargado');
+  console.clear();
+  console.log('🚀 Aplicación iniciada');
 
-  // Verificar si Firebase está disponible
-  if (typeof firebase === 'undefined') {
-    console.error('❌ Firebase no está cargado en el HTML');
-    alert('Error: Firebase no se cargó. Revisa el index.html');
-    return;
-  }
-  console.log('✅ Firebase detectado');
-
-  // Configurar fecha
-  const fechaInput = document.getElementById('fecha');
-  if (fechaInput) fechaInput.valueAsDate = new Date();
-
-  // Monitorear autenticación
   firebase.auth().onAuthStateChanged(usuario => {
-    console.log('🔐 onAuthStateChanged:', usuario ? usuario.email : 'Sin usuario');
+    console.log('🔐 Estado Auth:', usuario ? usuario.email : 'NO LOGUEADO');
 
     if (usuario) {
       usuarioActual = usuario;
       mostrarApp(usuario);
     } else {
       mostrarLogin();
-      // Auto-login
-      setTimeout(autoLogin, 700);
+      setTimeout(autoLogin, 600);
     }
   });
 });
 
-// ==================== AUTO LOGIN ====================
 function autoLogin() {
-  console.log('🔄 Iniciando AUTO-LOGIN...');
+  console.log('🔄 Intentando auto-login...');
   firebase.auth().signInWithEmailAndPassword(AUTO_LOGIN_EMAIL, AUTO_LOGIN_PASS)
-    .then(userCredential => {
-      console.log('🚀 AUTO-LOGIN EXITOSO:', userCredential.user.email);
-      usuarioActual = userCredential.user;
-      mostrarApp(userCredential.user);
+    .then(cred => {
+      console.log('🚀 AUTO-LOGIN EXITOSO:', cred.user.email);
+      mostrarApp(cred.user);
     })
-    .catch(error => {
-      console.error('❌ AUTO-LOGIN ERROR:', error.code, error.message);
-      mostrarLogin(); // Mostrar formulario normal
+    .catch(err => {
+      console.error('❌ Auto-login falló:', err.code);
+      mostrarLogin();
     });
 }
 
-// ==================== LOGIN MANUAL ====================
 function login(event) {
   event.preventDefault();
-  console.log('🔄 Login manual iniciado');
+  console.log('🔄 Login manual...');
 
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
   const errorMsg = document.getElementById('loginError');
   const btn = event.target.querySelector('button');
-  const btnOriginal = btn.textContent;
+  const textoOriginal = btn.textContent;
 
   if (!email || !password) {
     mostrarError(errorMsg, 'Completa email y contraseña');
@@ -71,35 +52,29 @@ function login(event) {
   btn.disabled = true;
 
   firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      console.log('✅ Login manual exitoso');
-      mostrarApp(userCredential.user);
+    .then(cred => {
+      console.log('✅ Login exitoso');
+      mostrarApp(cred.user);
     })
-    .catch(error => {
-      console.error('❌ Error login:', error.code, error.message);
-      let msg = 'Error al ingresar';
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') msg = 'Contraseña incorrecta';
-      if (error.code === 'auth/user-not-found') msg = 'Usuario no encontrado';
-      mostrarError(errorMsg, msg);
+    .catch(err => {
+      console.error('❌ Error:', err.code);
+      mostrarError(errorMsg, 'Usuario o contraseña incorrectos');
     })
     .finally(() => {
-      btn.textContent = btnOriginal;
+      btn.textContent = textoOriginal;
       btn.disabled = false;
     });
 }
 
-// ==================== FUNCIONES DE PANTALLA ====================
 function mostrarLogin() {
-  console.log('🔐 Mostrando Login');
   document.getElementById('loginScreen').classList.add('active');
   document.getElementById('mainApp').classList.remove('active');
 }
 
 function mostrarApp(usuario) {
-  console.log('📱 Mostrando App');
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('mainApp').classList.add('active');
-  document.getElementById('userInfo').textContent = `Conectado: ${usuario.email}`;
+  document.getElementById('userInfo').textContent = `Conectado como: ${usuario.email}`;
   if (typeof renderizarTabla === 'function') renderizarTabla();
 }
 
@@ -109,8 +84,27 @@ function mostrarError(el, msg) {
 }
 
 function logout() {
-  firebase.auth().signOut().then(() => location.reload());
+  if (confirm('¿Cerrar sesión?')) {
+    firebase.auth().signOut().then(() => location.reload());
+  }
 }
 
-// ==================== FIN ====================
-console.log('✅ app.js cargado con versión debug');
+// Funciones de recuperación (mantenidas)
+function mostrarRecuperacion() {
+  document.getElementById('recoveryModal').style.display = 'flex';
+}
+
+function cerrarRecuperacion() {
+  document.getElementById('recoveryModal').style.display = 'none';
+}
+
+function enviarRecuperacion() {
+  const email = document.getElementById('recoveryEmail').value.trim();
+  if (!email) return alert('Ingresa tu correo');
+  
+  firebase.auth().sendPasswordResetEmail(email)
+    .then(() => alert('✅ Enlace enviado a tu correo'))
+    .catch(() => alert('Error al enviar enlace'));
+}
+
+console.log('✅ app.js cargado correctamente');
